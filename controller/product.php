@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 require_once('../config/Database.php');
 require_once('../models/Product.php');
 require_once('../models/Response.php');
@@ -81,7 +82,7 @@ if (array_key_exists('id', $_GET)) {
                 exit();
             }
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description']);
+                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description'], $row['rate']);
                 $prodArr = $product->returnProductArray();
             }
 
@@ -148,7 +149,7 @@ else if (empty($_GET)) {
             $rowCount = $stmt->rowCount();
             $prodArr = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description']);
+                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description'], $row['rate']);
                 $prodArr[] = $product->returnProductArray();
                 
             }
