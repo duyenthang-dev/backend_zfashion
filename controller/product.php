@@ -24,12 +24,12 @@ require_once('../models/Response.php');
         }
     }
 }
-* * Bao gồm 4 phần:
-* * - success: trạng thái báo thành công hay thất bại
-* * - statusCode: mã http code trả về
-* * - message: message từ server trả về, có thể rỗng
-* * - data: phần dữ liệu của server lấy từ database trả về
-*/
+ * * Bao gồm 4 phần:
+ * * - success: trạng thái báo thành công hay thất bại
+ * * - statusCode: mã http code trả về
+ * * - message: message từ server trả về, có thể rỗng
+ * * - data: phần dữ liệu của server lấy từ database trả về
+ */
 
 
 /** ------------------------------------------------------------------------------------------------------------ */
@@ -48,7 +48,8 @@ try {
 }
 
 //* array_key_exists('id', $_GET): nếu có giá trị id trong request gửi lên => thao tác cho 1 sản phẩm
-if (array_key_exists('id', $_GET)) {
+if (array_key_exists('id', $_GET)) 
+{
 
     $productId = $_GET['id'];
     if ($productId == '' || !is_numeric($productId)) {
@@ -63,7 +64,7 @@ if (array_key_exists('id', $_GET)) {
     /** 
      * * lấy sản phẩm theo id
      * * vd lấy thông tin sản phẩm có id = 1: http://localhost/backend_zfashion/products/1 
-    */
+     */
     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         try {
             $query = 'SELECT * FROM product WHERE product_id =:productId LIMIT 1';
@@ -97,7 +98,6 @@ if (array_key_exists('id', $_GET)) {
             $response->setData($returnData);
             $response->send();
             exit;
-
         } catch (ProductException $e) {
             $response = new Response();
             $response->setHttpStatusCode(500);
@@ -105,8 +105,7 @@ if (array_key_exists('id', $_GET)) {
             $response->addMessage($e->getMessage());
             $response->send();
             exit;
-        }
-        catch(PDOException $e) {
+        } catch (PDOException $e) {
             $response = new Response();
             $response->setHttpStatusCode(500);
             $response->setSuccess(false);
@@ -114,13 +113,9 @@ if (array_key_exists('id', $_GET)) {
             $response->send();
             exit;
         }
-    } 
-    elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
-    {
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //TODO: tạo sản phẩm
-    } 
-    elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') 
-    {
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
         //TODO: xoá sản phẩm theo id
         try {
             $query = 'SELECT * FROM product WHERE product_id =:productId LIMIT 1';
@@ -178,16 +173,73 @@ if (array_key_exists('id', $_GET)) {
         $response->send();
         exit;
     }
+} 
+//* phân trang
+elseif (array_key_exists('page', $_GET)) {
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        $page = $_GET['page'];
+        $limitPerPage = 9;
+        try {
+            $query = 'SELECT COUNT(product_id) as totalProducts FROM product';
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $count = intval($row['totalProducts']);
+            $numOfPages = ceil($count / $limitPerPage);
+
+            if($numOfPages == 0){
+                $numOfPages = 1;
+            }
+
+            if($page > $numOfPages){
+                $response = new Response();
+                $response->setHttpStatusCode(404);
+                $response->setSuccess(false);
+                $response->addMessage("Không tìm thấy trang");
+                $response->send();
+                exit;
+            }
+
+            $offset = ($page == 1? 0: $limitPerPage*($page -1));
+
+            $query1 = "SELECT * FROM product LIMIT :pglimit OFFSET :offset";
+            $stmt1 = $db->prepare($query1);
+            $stmt1->bindParam(':pglimit', $limitPerPage, PDO::PARAM_INT);
+            $stmt1->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt1->execute();
+            $prodArr = [];
+            while ($row = $stmt1->fetch(PDO::FETCH_ASSOC)) {
+                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description'], $row['rate']);
+                $prodArr[] = $product->returnProductArray();
+            }
+
+
+        } catch (ProductException $e) {
+            $response = new Response();
+            $response->setHttpStatusCode(500);
+            $response->setSuccess(false);
+            $response->addMessage($e->getMessage());
+            $response->send();
+            exit;
+        }
+    } else {
+        $response = new Response();
+        $response->setHttpStatusCode(405);
+        $response->setSuccess(false);
+        $response->addMessage("Request method not allowed");
+        $response->send();
+        exit;
+    }
 }
 //* empty($_GET): thao tác trên cả bảng dữ liệu products
-else if (empty($_GET)) {
+elseif (empty($_GET)) 
+{
     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         /** 
-        * * lấy tất cả sản phẩm 
-        * * vd lấy thông tin tất cả sản phẩm: http://localhost/backend_zfashion/products
-        */
-        try 
-        {
+         * * lấy tất cả sản phẩm 
+         * * vd lấy thông tin tất cả sản phẩm: http://localhost/backend_zfashion/products
+         */
+        try {
             $query = 'SELECT * FROM product ORDER BY product_id ASC';
             $stmt = $db->prepare($query);
             $stmt->execute();
@@ -196,9 +248,8 @@ else if (empty($_GET)) {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description'], $row['rate']);
                 $prodArr[] = $product->returnProductArray();
-                
             }
-           
+
             $returnData = array();
             $returnData['rows_return'] = $rowCount;
             $returnData['products'] = $prodArr;
@@ -210,7 +261,6 @@ else if (empty($_GET)) {
             $response->toCache(true);
             $response->send();
             exit;
-
         } catch (ProductException $e) {
             //* lấy danh sách sản phẩm không thành công
             $response = new Response();
@@ -220,12 +270,9 @@ else if (empty($_GET)) {
             $response->send();
             exit;
         }
-    } 
-    else if ($_SERVER['REQUEST_METHOD'] == 'POST') 
-    {
+    } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //TODO: tạo danh sách sản phẩm (thêm nhiều sản phẩm 1 lúc)
-    } 
-    else {
+    } else {
         $response = new Response();
         $response->setHttpStatusCode(405);
         $response->setSuccess(false);
@@ -233,8 +280,8 @@ else if (empty($_GET)) {
         $response->send();
         exit;
     }
-}
-else
+} 
+else 
 {
     //* khi người dùng nhập uri không đúng quy tắc vd /products/abc => trả về lỗi
     $response = new Response();
