@@ -56,7 +56,7 @@ if (array_key_exists('id', $_GET))
         $response = new Response();
         $response->setHttpStatusCode(400);
         $response->setSuccess(false);
-        $response->addMessage("ID sản phẩm không được rỗng và phải là số");
+        $response->addMessage("ID sản phẩm không được rỗng và phải là");
         $response->send();
         exit();
     }
@@ -115,7 +115,10 @@ if (array_key_exists('id', $_GET))
         }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //TODO: tạo sản phẩm
-    } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+        
+    } 
+    elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') 
+    {
         //TODO: xoá sản phẩm theo id
         try {
             $query = 'SELECT * FROM product WHERE product_id =:productId LIMIT 1';
@@ -272,7 +275,87 @@ elseif (empty($_GET))
         }
     } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //TODO: tạo danh sách sản phẩm (thêm nhiều sản phẩm 1 lúc)
-    } else {
+        try {
+            //lấy id lớn nhất trong db
+            $query_check_id = 'SELECT MAX(id) AS max_id';
+            $stmt = $db->prepare($query_check_id);
+            $stmt->bindParam(':productId', $productId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $obj = $stmt->fetch(PDO::FETCH_ASSOC);
+            $max_id = $obj->max_id;
+            $max_id++;
+            
+
+            $ID = $max_id;
+            $title = $_POST['title'];
+            $price = $_POST['price'];
+            $state = $_POST['state'];
+            $imgSrc = $_POST['imgSrc'];
+            $color = $_POST['color'];
+            $size = $_POST['size'];
+            $des = $_POST['description'];
+            $quantity = $_POST['quantity'];
+
+            if(empty($quantity) || empty($title) || empty($price) || empty($state) || empty($imgSrc) || empty($color) || empty($size) || empty($des)) {
+                $response = new Response();
+                $response->setHttpStatusCode(406);
+                $response->setSuccess(false);
+                $response->addMessage("Vui lòng nhập đủ thông tin sản pham");
+                $response->send();
+                exit;
+            }
+
+
+            $query_insert_product = "INSERT INTO product (product_id, state, title, rate, price, ID_orders, ID_producer, quantity, imgSrc, color, size, description)
+                            VALUES ($ID, $state, $title, 0, $price, NULL, NULL, $quantity, $imgSrc, $color, $size, $des)";
+
+            $query_insert_size = "INSERT INTO size VALUES ($ID, $size)";
+            $query_insert_color = "INSERT INTO color VALUES ($ID, $color)";
+
+            $insert_product = $db->prepare($query_insert_product);
+            $insert_size = $db->prepare($query_insert_size);
+            $insert_color = $db->prepare($query_insert_color);
+
+            $insert_product->execute();
+            $insert_size->execute();
+            $insert_color->execute();
+
+            $rate = 4;
+            $product = new Product($ID, $title, $state, $imgSrc, $price, $color, $size, $des, $rate);
+            $prodArr = $product->returnProductArray();
+
+            $returnData = array();
+            $returnData['rows_return'] = 1;
+            $returnData['product'] = $prodArr;
+
+            $response = new Response();
+            $response->setHttpStatusCode(200);
+            $response->setSuccess(true);
+            $response->toCache(true);
+            $response->setData($returnData);
+            $response->send();
+            exit;
+
+
+        } catch (ProductException $e) {
+            $response = new Response();
+            $response->setHttpStatusCode(500);
+            $response->setSuccess(false);
+            $response->addMessage($e->getMessage());
+            $response->send();
+            exit;
+        }
+        catch(PDOException $e) {
+            $response = new Response();
+            $response->setHttpStatusCode(500);
+            $response->setSuccess(false);
+            $response->addMessage($e->getMessage());
+            $response->send();
+            exit;
+        }
+    } 
+    else {
         $response = new Response();
         $response->setHttpStatusCode(405);
         $response->setSuccess(false);
