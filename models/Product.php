@@ -12,8 +12,9 @@ class Product
     private $price;
     private $color;
     private $size;
+    private $rate;
     private $description;
-    public function __construct($id, $title, $status, $imageSrc, $price, $color, $size, $description)
+    public function __construct($id, $title, $status, $imageSrc, $price, $color, $size, $description, $rate)
     {
         $this->id = $id;
         $this->title = $title;
@@ -23,6 +24,7 @@ class Product
         $this->color = $color;
         $this->size = $size;
         $this->description = $description;
+        $this->rate = $rate;
     }
     //* getter
     public function getId()
@@ -57,7 +59,9 @@ class Product
     {
         return $this->description;
     }
-
+    public function getRate(){
+        return $this->rate;
+    }
     public function returnProductArray()
     {
         $product = array();
@@ -69,6 +73,7 @@ class Product
         $product['color'] = $this->color;
         $product['size'] = $this->size;
         $product['description'] = $this->description;
+        $product['rate'] = $this->rate;
         return $product;
     }
 
