@@ -117,7 +117,54 @@ if (array_key_exists('id', $_GET))
         //TODO: tạo sản phẩm
     } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
         //TODO: xoá sản phẩm theo id
-    } else {
+        try {
+            $query = 'SELECT * FROM product WHERE product_id =:productId LIMIT 1';
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':productId', $productId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $rowCount = $stmt->rowCount();
+
+            if ($rowCount === 0) {
+                $response = new Response();
+                $response->setHttpStatusCode(404);
+                $response->setSuccess(false);
+                $response->addMessage("Không tìm thấy id sản phẩm");
+                $response->send();
+                exit();
+            }
+
+            $query = 'DELETE FROM product WHERE product_id =:productId';
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':productId', $productId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $response = new Response();
+            $response->setHttpStatusCode(200);
+            $response->setSuccess(true);
+            $response->send();
+            exit();
+
+        } catch (ProductException $e) {
+            $response = new Response();
+            $response->setHttpStatusCode(500);
+            $response->setSuccess(false);
+            $response->addMessage($e->getMessage());
+            $response->send();
+            exit();
+        }
+        catch(PDOException $e) {
+            $response = new Response();
+            $response->setHttpStatusCode(500);
+            $response->setSuccess(false);
+            $response->addMessage($e->getMessage());
+            $response->send();
+            exit();
+        }
+
+    } 
+    else 
+    {
         //* request method không hợp lệ
         $response = new Response();
         $response->setHttpStatusCode(405);
