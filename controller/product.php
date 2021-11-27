@@ -382,7 +382,7 @@ else if (empty($_GET)) {
 
 
             $query_insert_product = "INSERT INTO product (product_id, state, title, rate, price, ID_orders, ID_producer, quantity, imgSrc, color, size, description)
-                            VALUES ($ID, $state, $title, 0, $price, NULL, NULL, $quantity, $imgSrc, $color, $size, $des)";
+                            VALUES ($ID, $state, $title, 4, $price, NULL, NULL, $quantity, $imgSrc, $color, $size, $des)";
 
             $query_insert_size = "INSERT INTO size VALUES ($ID, $size)";
             $query_insert_color = "INSERT INTO color VALUES ($ID, $color)";
