@@ -81,7 +81,7 @@ if (array_key_exists('id', $_GET)) {
                 exit();
             }
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description']);
+                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description'], $row['rate']);
                 $prodArr = $product->returnProductArray();
             }
 
@@ -181,7 +181,8 @@ if (array_key_exists('id', $_GET)) {
             $insert_size->execute();
             $insert_color->execute();
 
-            $product = new Product($ID, $title, $state, $imgSrc, $price, $color, $size, $des);
+            $rate = 4;
+            $product = new Product($ID, $title, $state, $imgSrc, $price, $color, $size, $des, $rate);
             $prodArr = $product->returnProductArray();
 
             $returnData = array();
@@ -244,7 +245,7 @@ else if (empty($_GET)) {
             $rowCount = $stmt->rowCount();
             $prodArr = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description']);
+                $product = new Product($row['product_id'], $row['title'], $row['state'], $row['imgSrc'], $row['price'], $row['color'], $row['size'], $row['description'], $row['rate']);
                 $prodArr[] = $product->returnProductArray();
                 
             }
@@ -320,7 +321,7 @@ else if (empty($_GET)) {
             //$insert_size->execute();
             //$insert_color->execute();
 
-            $product = new Product($ID, $title, $state, $imgSrc, $price, $color, $size, $des);
+            $product = new Product($ID, $title, $state, $imgSrc, $price, $color, $size, $des, $rate);
             $prodArr = $product->returnProductArray();
 
             $returnData = array();
