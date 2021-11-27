@@ -116,15 +116,11 @@ if (array_key_exists('id', $_GET)) {
     } 
     elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
-        //TODO: tạo sản phẩm
-        
-<<<<<<< HEAD
+        //TODO: tạo sản phẩm    
     } 
     elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') 
     {
         //TODO: xoá sản phẩm theo id
-=======
->>>>>>> uoc1
         try {
             //check xem id da ton tai hay chua
             
