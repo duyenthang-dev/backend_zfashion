@@ -1,7 +1,9 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 require_once('../config/Database.php');
 require_once('../models/Product.php');
 require_once('../models/Response.php');
+
 /** ------------------------------------------------------------------------------------------------------------ */
 /** 
  * *các api có dạng 

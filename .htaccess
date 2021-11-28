@@ -8,3 +8,5 @@ ReWriteRule ^products$ controller/product.php [L]
 ReWriteRule ^orders$ controller/order.php [L]
 
 ReWriteRule ^payment_momo_aio$ controller/momoPayment/initPayment.php [L]
+
+ReWriteRule ^users$ controller/user.php [L]

@@ -37,8 +37,9 @@ if (empty($_GET)) {
                 exit;
             }
             $rawData = file_get_contents('php://input');
+           
             $jsonData = json_decode($rawData);
-
+          
             $orderId = $jsonData->orderId;
             $amount = $jsonData->amount;
             $orderInfo = $jsonData->orderInfo;
