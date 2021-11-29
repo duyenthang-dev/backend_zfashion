@@ -3,9 +3,11 @@ require_once('../config/Database.php');
 require_once('../models/User.php');
 require_once('../models/Response.php');
 // header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
+header ("Access-Control-Allow-Origin: *");
+header ("Access-Control-Expose-Headers: Content-Length, X-JSON");
+header ("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+header ("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Credentials:true");
 
 
 //*-----------------------------------DATABASE CONNECTION--------------------------

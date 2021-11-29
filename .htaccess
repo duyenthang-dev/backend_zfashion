@@ -1,3 +1,5 @@
+
+
 php_flag display_error on
 ReWriteEngine On
 ReWriteCond %{REQUEST_FILENAME} !-d
@@ -12,3 +14,4 @@ ReWriteRule ^payment_momo_aio$ controller/momoPayment/initPayment.php [L]
 ReWriteRule ^users$ controller/user.php [L]
 
 ReWriteRule ^sessions$ controller/session.php [L]
+
